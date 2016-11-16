@@ -32,3 +32,17 @@
 
     Say what ?
 
+## Design Choices
+    
+
+    * Tensorflow 3D convolutions
+
+    * Multi-label nn.softmax instead of nn.sparse
+        (non-exclusive classes)
+
+    * Argsort and not argmax
+    
+
+## FAQ
+
+1. But how can you improve JPEG?
