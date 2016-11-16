@@ -5,7 +5,7 @@ class HyperParams() :
         # Hard params and magic numbers
         self.sparse      = False
         self.vgg_weights = './data/caffe_layers_value.pickle'
-        self.model_path  = 'models/model-20'
+        self.model_path  = 'models/model'
         self.n_labels    = 257
         self.top_k       = 5  
         self.stddev      = 0.2
@@ -20,6 +20,25 @@ class HyperParams() :
         if verbose:
             pprint(self.__dict__)
         
+class TrainingParams():
+    def __init__(self, verbose):
+        self.model_path         = './models/'
+        self.num_epochs          = 20
+        self.learning_rate      = 0.002
+        self.weight_decay_rate  = 0.0005
+        self.momentum           = 0.9
+        self.batch_size         = 128
+        self.max_iters          = 200000
+        self.test_every_iter    = 200
+        self.data_train_path    = './data/train.pickle'
+        self.data_test_path     = './data/test.pickle'
+        self.resume_training    = True
+        self.on_resume_fix_lr   = True
+        self.change_lr_env      = True
+
+        if verbose:
+            pprint(self.__dict__)
+
 class CNNParams():
     def __init__(self, verbose):
         self.layer_shapes = self.get_layer_shapes()
@@ -71,20 +90,3 @@ class CNNParams():
         return shapes
 
 
-class TrainingParams():
-    def __init__(self, verbose):
-        self.model_path         = './models/'
-        self.num_epochs          = 20
-        self.learning_rate      = 0.002
-        self.weight_decay_rate  = 0.0005
-        self.momentum           = 0.9
-        self.batch_size         = 128
-        self.max_iters          = 200000
-        self.test_every_iter    = 200
-        self.data_train_path    = './data/train.pickle'
-        self.data_test_path     = './data/test.pickle'
-        self.resume_training    = True
-        self.on_resume_fix_lr   = True
-
-        if verbose:
-            pprint(self.__dict__)
