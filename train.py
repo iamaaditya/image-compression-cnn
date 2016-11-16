@@ -1,4 +1,5 @@
 from __future__ import division
+from __future__ import print_function
 import math
 import os
 import tensorflow as tf
@@ -55,7 +56,10 @@ with tf.Session() as sess:
     sess.run(tf.initialize_all_variables())
 
     if tparam.resume_training:
-        saver.restore(sess, tparam.model_path + '/model')
+        saver.restore(sess, tparam.model_path + 'model')
+        if tparam.on_resume_fix_lr:
+            optimizer     = tf.train.AdamOptimizer(tparam.learning_rate)
+        print("model restored...")
 
     # for the pretty pretty tensorboard
     summary_writer = tf.train.SummaryWriter('tensorboards', sess.graph)

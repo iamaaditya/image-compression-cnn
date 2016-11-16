@@ -84,6 +84,7 @@ class TrainingParams():
         self.data_train_path    = './data/train.pickle'
         self.data_test_path     = './data/test.pickle'
         self.resume_training    = True
+        self.on_resume_fix_lr   = True
 
         if verbose:
             pprint(self.__dict__)
