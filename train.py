@@ -39,11 +39,14 @@ else:
     loss_tf   = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prob_tf, labels_tf))
 train_loss    = tf.scalar_summary("training loss", loss_tf)
 test_loss     = tf.scalar_summary("validation loss", loss_tf)
+
 optimizer     = tf.train.AdamOptimizer(tparam.learning_rate, epsilon=0.1)
-optimizer.beta1 = 0.9
-optimizer.beta2 = 0.9
+# optimizer.beta1 = 0.9
+# optimizer.beta2 = 0.9
+# optimizer = tf.train.FtrlOptimizer(tparam.learning_rate)
+# optimizer     = tf.train.RMSPropOptimizer(tparam.learning_rate)
 train_op      = optimizer.minimize(loss_tf)
-# train_op      = tf.train.AdamOptimizer(tparam.learning_rate, beta1=0.9, beta2=0,9, epsilon=0.1).minimize(loss_tf)
+
 
 def sparse_labels_or_not(batch):
     if hyper.sparse:
@@ -61,7 +64,8 @@ with tf.Session() as sess:
     if tparam.resume_training:
         saver.restore(sess, tparam.model_path + 'model')
         if tparam.on_resume_fix_lr:
-            optimizer.learning_rate = tparam.learning_rate
+            optimizer = tf.train.FtrlOptimizer(tparam.learning_rate)
+            # optimizer.learning_rate = tparam.learning_rate
             train_op      = optimizer.minimize(loss_tf)
         print("model restored...")
 

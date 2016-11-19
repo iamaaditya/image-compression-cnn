@@ -23,18 +23,18 @@ class HyperParams() :
 class TrainingParams():
     def __init__(self, verbose):
         self.model_path         = './models/'
-        self.num_epochs          = 20
-        self.learning_rate      = 0.002
+        self.num_epochs         = 200
+        self.learning_rate      = 0.0002
         self.weight_decay_rate  = 0.0005
         self.momentum           = 0.9
-        self.batch_size         = 128
+        self.batch_size         = 50
         self.max_iters          = 200000
         self.test_every_iter    = 200
         self.data_train_path    = './data/train.pickle'
         self.data_test_path     = './data/test.pickle'
-        self.resume_training    = True
-        self.on_resume_fix_lr   = True
-        self.change_lr_env      = True
+        self.resume_training    = False
+        self.on_resume_fix_lr   = False
+        self.change_lr_env      = False
 
         if verbose:
             pprint(self.__dict__)
@@ -55,8 +55,9 @@ class CNNParams():
         if hyper.cnn_struct == 'vgg':
             f = [64, 64, 128, 128, 256, 256, 256, 512, 512, 512, 512, 512, 512, 1024]
         else:
-            f = [64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 16, 1024]
+            f = [64, 64, 128, 128, 128, 128, 128, 128, 128, 128, 128, 64, 16, 1024]
             conv_3d_size = 1024
+            conv_3d_bias = 1024
 
         shapes['conv1_1/W'] = (hyper.filter_h, hyper.filter_w, hyper.image_c, f[0])
         shapes['conv1_1/b'] = (f[0],)
@@ -83,7 +84,7 @@ class CNNParams():
         shapes['conv5_2/W'] = (hyper.filter_h, hyper.filter_w, f[10], f[11])
         shapes['conv5_2/b'] = (f[11],)
         shapes['conv5_3/W'] = (hyper.filter_h, hyper.filter_w, f[11], f[12])
-        shapes['conv5_3/b'] = (f[12],)
+        shapes['conv5_3/b'] = (conv_3d_bias,)
         shapes['conv6/W']   = (hyper.filter_h, hyper.filter_w, conv_3d_size, f[13])
         shapes['conv6/b']   = (f[13],)
         shapes['GAP/W']     = (f[13], hyper.n_labels)

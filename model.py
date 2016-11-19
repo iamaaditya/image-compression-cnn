@@ -61,11 +61,14 @@ class CNN():
             if name == 'conv5_3':
                 # learn different filter for each input channel
                 # thus the number of input channel has to be reduced
-                bias = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
+                conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
+                # conv_biases_3d  = tf.get_variable("b_", shape=(8,), initializer=b_initializer)
+                # bias = tf.nn.bias_add(conv, conv_biases_3d)
+                # bias = conv
             else:
                 conv = tf.nn.conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
-                bias = tf.nn.bias_add(conv, conv_biases)
-            
+            bias = tf.nn.bias_add(conv, conv_biases)
+            bias = tf.nn.dropout(bias,0.7) 
             if nonlinearity is None: 
                 return bias
             return nonlinearity(bias, name=name)
