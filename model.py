@@ -66,7 +66,8 @@ class CNN():
                 # bias = tf.nn.bias_add(conv, conv_biases_3d)
                 # bias = conv
             else:
-                conv = tf.nn.conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
+                # conv = tf.nn.conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
+                conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
             bias = tf.nn.bias_add(conv, conv_biases)
             bias = tf.nn.dropout(bias,0.7) 
             if nonlinearity is None: 
