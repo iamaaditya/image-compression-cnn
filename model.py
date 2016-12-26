@@ -57,17 +57,21 @@ class CNN():
                 
             conv_weights = tf.get_variable("W", shape=W_shape, initializer=W_initializer)
             conv_biases  = tf.get_variable("b", shape=b_shape, initializer=b_initializer)
-            print name, input_.get_shape()
-            if name == 'conv5_3':
+
+            # debug
+            if name == 'depth':
                 # learn different filter for each input channel
                 # thus the number of input channel has to be reduced
                 conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
+                # conv = tf.nn.separable_conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
                 # conv_biases_3d  = tf.get_variable("b_", shape=(8,), initializer=b_initializer)
                 # bias = tf.nn.bias_add(conv, conv_biases_3d)
                 # bias = conv
             else:
-                # conv = tf.nn.conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
-                conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
+                conv = tf.nn.conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
+                # conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
+                # conv = tf.nn.separable_conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
+
             bias = tf.nn.bias_add(conv, conv_biases)
             bias = tf.nn.dropout(bias,0.7) 
             if nonlinearity is None: 
@@ -127,10 +131,15 @@ class CNN():
         conv5_1    = self.conv2d_depth(pool4,   "conv5_1", nonlinearity=tf.nn.relu)
         conv5_2    = self.conv2d_depth(conv5_1, "conv5_2", nonlinearity=tf.nn.relu)
         conv5_3    = self.conv2d_depth(conv5_2, "conv5_3", nonlinearity=tf.nn.relu)
+    
+        # feature wise convolution layers, no non-linearity
+        conv_depth_1 = self.conv2d_depth(conv5_3, "conv6_1")
+        # two layer of feature-wise convolution, a cubic feature transformation
+        conv_depth   = self.conv2d_depth(conv_depth_1, "depth")
 
         # this is a replcement of last FCL layer from VGG (common in GAP & GMP models)
         # this layer does not have non-nonlinearity
-        conv_last = self.conv2d_depth(conv5_3, "conv6")
+        conv_last = self.conv2d_depth(conv_depth, "conv6")
         gap       = tf.reduce_mean(conv_last, [1,2])
 
         with tf.variable_scope("GAP"):

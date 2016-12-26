@@ -42,12 +42,12 @@ with tf.Session() as sess:
     class_predictions_all = class_prob_val.argsort(axis=1)
 
     roi_map = None
-    # for i in xrange(-1 * hyper.top_k,0):
-    for i in xrange(-2 ,0):
+    for i in xrange(-1 * hyper.top_k,0):
 
         current_class = class_predictions_all[:,i]
         classmap_vals = sess.run(classmap, feed_dict={class_tf: current_class, conv_last: conv_last_val})
         normalized_classmap = normalize(classmap_vals[0])
+        
         if roi_map == None:
             roi_map = 2 * normalized_classmap 
         else:
