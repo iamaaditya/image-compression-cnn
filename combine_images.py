@@ -3,31 +3,31 @@ import sys
 import Image
 import os
 import numpy as np
-# from array2pil import array2PIL
 from util import load_image, array2PIL
 import argparse
 from scipy.stats import percentileofscore
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-image'            , type=str , default= './images_2/ori_OutdoorNatural_073.png')
-parser.add_argument('-map'              , type=str , default= './images_2/map_OutdoorNatural_073.png')
+parser.add_argument('-image'            , type=str , default= 'image.png')
+parser.add_argument('-map'              , type=str , default= './output/msroi_map.jpg')
 parser.add_argument('-output_directory' , type=str , default= 'temp')
 parser.add_argument('-modifier'         , type=str , default= '')
 parser.add_argument('-find_best'        , type=int , default=1)
 parser.add_argument('-use_convert'      , type=int , default=1)
 parser.add_argument('-jpeg_compression' , type=int , default=50)
 parser.add_argument('-model'            , type=int , default=6)
-parser.add_argument('-single'           , type=int , default=0)
+parser.add_argument('-single'           , type=int , default=1)
 parser.add_argument('-dataset'          , type=str , default='kodak')
+parser.add_argument('-print_metrics'    , type=int , default=0)
 args = parser.parse_args()
 
 
-def make_quality_compression(ori,sal):
+def make_quality_compression(original,sal):
     print args.image,
     # if the size of the map is not the same original image, then blow it
-    if ori.size != sal.size:
-        sal = sal.resize(ori.size)
+    if original.size != sal.size:
+        sal = sal.resize(original.size)
 
     sal_arr = np.asarray(sal)
     img_qualities = []
@@ -38,7 +38,7 @@ def make_quality_compression(ori,sal):
         if args.use_convert:
             os.system('convert -colorspace sRGB -filter Lanczos -interlace Plane -type truecolor -quality ' + str(q) + ' ' + args.image + ' ' + name)
         else:
-            ori.save(name, quality=q)
+            original.save(name, quality=q)
         img_qualities.append(np.asarray(Image.open(name)))
                    
     k = img_qualities[-1][:] # make sure it is a copy and not reference
@@ -104,83 +104,60 @@ def make_quality_compression(ori,sal):
                 if qq < low : qq = low
                 if qq > high: qq = high 
                 k[i,j,l] = img_qualities[qq][i,j,l]
+                
                     
+
     # save the original file at the given quality level
-    ori_compressed = args.output_directory + '/' + '_ORI_' + args.image.split('/')[-1] + '_' + str(args.jpeg_compression) + '.jpg'
-    ori.save(ori_compressed, quality=args.jpeg_compression)
+    compressed = args.output_directory + '/' + '_original_' + args.image.split('/')[-1] + '_' + str(args.jpeg_compression) + '.jpg'
+    original.save(compressed, quality=args.jpeg_compression)
    
     
-    ori_size = os.path.getsize(ori_compressed)
-    os.system('convert ' + args.image + ' temp.png')
-    uncompressed_size = os.path.getsize('temp.png')
+    original_size = os.path.getsize(compressed)
+    os.system('convert ' + args.image + " " + args.output_directory + '/temp.png')
+    uncompressed_size = os.path.getsize(args.output_directory + '/temp.png')
 
     out_img = array2PIL(k)
 
     if args.find_best:
-        out_name = args.output_directory + '/' + '_BEST_' + args.image.split('/')[-1] + '_' + '.jpg'
+        out_name = args.output_directory + '/' + '_compressed_' + args.image.split('/')[-1] + '_' + '.jpg'
         for qual in xrange(90,20,-1):
             out_img.save(out_name, quality=qual)
             current_size = os.path.getsize(out_name)
-            if current_size<= ori_size*1.02: 
-                print args.model, uncompressed_size, ori_size, current_size, args.jpeg_compression, qual,' | ',
+            if current_size<= original_size*1.02: 
+                print args.model, uncompressed_size, original_size, current_size, args.jpeg_compression, qual,' | ',
                 break
         else:
-            print args.model, uncompressed_size, ori_size, current_size, args.jpeg_compression, qual,' | ',
+            print args.model, uncompressed_size, original_size, current_size, args.jpeg_compression, qual,' | ',
 
     else:
         final_quality = [100, 85, 65, 45]
         for fq in final_quality:
             out_name = args.output_directory + '/' + args.modifier + args.image.split('/')[-1] + '_' + str(fq) + '.jpg'
             out_img.save(out_name, quality=fq)
-    return ori_compressed, out_name
+    return compressed, out_name
 
 
-# header
-# filename, model_number, uncompressed_size, jpeg_size, current_size, jpeg_compression, current_compression,
-# (JPEG) PSNR SSIM MSSSIM VIFP PSNRHVS PSNRHVSM
-# (model) PSNR SSIM MSSSIM VIFP PSNRHVS PSNRHVSM
-
-def get_metrics(ori, ori_compressed, out_name, size):
-    
-    metrics = "PSNR SSIM MSSSIM VIFP PSNRHVS PSNRHVSM".lower().split(' ')
-    # TODO add -y (overwrite files) 
-    # first convert all the three images to yuv format
-    size_x = size[0] - size[0]%16 # this is to make sure we can get MS-SSIM 
-    size_y = size[1] - size[1]%16 # metrics from VQMT, which requires divisible by 16
-
-    # for x in [ori_compressed, out_name]:
-    for x in [ori, ori_compressed, out_name]:
-        yuv_convert_command = "ffmpeg -hide_banner -loglevel panic -y -i " + x +" -s " + str(size_x) + "x" + str(size_y) + " -pix_fmt yuv420p " + x +".yuv"
-        os.system(yuv_convert_command)
-        # print command
-    for img_com in [ori_compressed, out_name]:
-        command_metrics = "~/image_compression/vqmt " + \
-                          ori+".yuv " + \
-                          img_com+".yuv " + \
-                          str(size_x) + " " + \
-                          str(size_y) + " " + \
-                          "1 1 out PSNR SSIM MSSSIM VIFP PSNRHVS PSNRHVSM"
-
-        # print command_metrics
-        os.system(command_metrics)
-        for m in metrics:
-            f = open('out_' + m + '.csv').read().splitlines()[1].split(',')[1]
-            print f, 
-        print ' | ',
-    print ''
 
 from glob import glob
+# make the output directory to store the Q level images, 
+if not os.path.exists(args.output_directory):
+    os.makedirs(args.output_directory)
+
+if args.print_metrics:
+    from get_metrics import get_metrics
 
 if args.single:
-    ori = Image.open(args.image)
+    original = Image.open(args.image)
     sal = Image.open(args.map)
-    a,b = make_quality_compression(ori,sal)
-    get_metrics(args.image,a,b, ori.size)
+    a,b = make_quality_compression(original,sal)
+
+    if args.print_metrics:
+        get_metrics(args.image,a,b, original.size)
 
 else:
     
     if args.dataset == 'kodak':
-        image_path = '/home/ap/image_compression/kodak/*.png'
+        image_path = 'images_directory/kodak/*.png'
     elif args.dataset == 'large':
         image_path = 'images_directory/output_large/ori_*.png'
     else:
@@ -193,7 +170,8 @@ else:
             map_file = 'images_directory/output_kodak/map_' + image_file.split('/')[-1] + '.jpg'
         args.image = image_file
         args.map   = map_file
-        ori = Image.open(args.image)
+        original = Image.open(args.image)
         sal = Image.open(args.map)
-        a,b = make_quality_compression(ori,sal)
-        get_metrics(args.image,a,b, ori.size)
+        a,b = make_quality_compression(original,sal)
+        if args.print_metrics:
+            get_metrics(args.image,a,b, original.size)

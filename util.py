@@ -1,6 +1,7 @@
 import skimage.io
 import skimage.transform
 import numpy as np
+import Image
 
 def chunker(seq, size):
     # http://stackoverflow.com/a/25701576/1189865
@@ -30,3 +31,13 @@ def load_single_image(image):
 #     img_resized = tf.image.resize_image_with_crop_or_pad(tf.convert_to_tensor(img, dtype=tf.float32), 224, 224)
 #     img_resized = tf.expand_dims(img_resized, 0)
 #     return img_resized, img
+
+
+def array2PIL(arr):
+    mode = 'RGBA'
+    shape = arr.shape
+    arr = arr.reshape(arr.shape[0]*arr.shape[1], arr.shape[2])
+    if len(arr[0]) == 3:
+        arr = np.c_[arr, 255*np.ones((len(arr),1), np.uint8)]
+
+    return Image.frombuffer(mode, (shape[1], shape[0]), arr.tostring(), 'raw', mode, 0, 1)
