@@ -1,6 +1,6 @@
 # Semantic Perceptual Image Compression using Deep Convolution Networks
 
-This code is part of the paper <[arxiv paper id](http://gpgpu.cs-i.brandeis.edu/semantic_jpeg.pdf)> . It consists of two parts:
+This code is part of the paper [arxiv](http://gpgpu.cs-i.brandeis.edu/semantic_jpeg.pdf) . It consists of two parts:
 1. Code to generate Multi-structure region of interest (MSROI)
    (This uses CNN model. A pretrained model has been provided)
 2. Code to use MSROI map to semantically compress image as JPEG
@@ -95,21 +95,25 @@ You may download pretrained weights referred in Params file as vgg_weights [from
 ## What this is NOT ?
 
 * Not an object detector. For that checkout-
+
     *[Fast RCNN](https://github.com/rbgirshick/fast-rcnn)
     
     *[Faster-RCNN](https://github.com/rbgirshick/py-faster-rcnn) 
     
 * Not a weakly labelled class detector or Class activation Map. For that checkout -
+
     *[Weakly detector](https://github.com/jazzsaxmafia/Weakly_detector) 
     
     *[CAM](https://github.com/metalbubble/CAM) 
     
 * Not saliency map or guided backprop. For that checkout -
+
     *[Lasagne saliency](https://github.com/Lasagne/Recipes/blob/master/examples/Saliency%20Maps%20and%20Guided%20Backpropagation.ipynb) 
     
     *[Grad-CAM](https://github.com/ramprs/grad-cam) 
     
 * Not Semantic segmentation. For that checkout -
+
     *[Oxford CRF CNN](https://github.com/torrvision/crfasrnn) 
     
     *[Fully convolutional neural network](https://github.com/shelhamer/fcn.berkeleyvision.org) 
