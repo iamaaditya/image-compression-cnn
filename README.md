@@ -49,6 +49,8 @@ If you get this error
     Failed to get matching files on models/model-50: Not found: models
     ```
 It means you have not downloaded the model file or it is not accesible. Code assumes a model files inside `models` directory. 
+Model has been uploaded to Github, but if it does not download due to GH's restriction you may download it from here
+https://www.dropbox.com/s/izfas78534qjg08/models.tar.gz?dl=0
     
 ## Compressing image using the Map
 
@@ -95,6 +97,8 @@ jpeg_psnr,jpeg_ssim,our_ssim,our_q,jpeg_psnrhvs,png_size,model_number,our_size,f
 
 
 # Multi-Structure Region-of-interest
+![Comparison of MSROI with other techniques](https://raw.githubusercontent.com/iamaaditya/image-compression-cnn/master/girl_msroi.png)
+Only our model identifies the face of the boy on the right as well the hands of both children at the bottom. 
 
 ## What this is ?
 * Find all semantic regions in an image in a single pass
