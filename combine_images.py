@@ -11,20 +11,33 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-image'            , type=str , default= 'image.png')
 parser.add_argument('-map'              , type=str , default= './output/msroi_map.jpg')
-parser.add_argument('-output_directory' , type=str , default= 'temp')
+parser.add_argument('-output_directory' , type=str , default= 'output')
 parser.add_argument('-modifier'         , type=str , default= '')
 parser.add_argument('-find_best'        , type=int , default=1)
-parser.add_argument('-use_convert'      , type=int , default=1)
+
+# change the threshold % to 1, if doing metric comparison against standard JPEG. 
+# Images will have limited discernibility but fairer comparison against standard.
+parser.add_argument('-threshold_pct'    , type=int , default=20)
+
+# if you have Imagemagick installed, use convert it is faster
+parser.add_argument('-use_convert'      , type=int , default=0)
+
+# try at multiple values. 50 is standard for our paper
 parser.add_argument('-jpeg_compression' , type=int , default=50)
+
+# there are various models from 1 to 6 on how best to mix different JPEG Qualities
 parser.add_argument('-model'            , type=int , default=6)
 parser.add_argument('-single'           , type=int , default=1)
 parser.add_argument('-dataset'          , type=str , default='kodak')
+
+# printing metrics requires https://github.com/Rolinh/VQMT
 parser.add_argument('-print_metrics'    , type=int , default=0)
 args = parser.parse_args()
 
 
 def make_quality_compression(original,sal):
-    print args.image,
+    if args.print_metrics:
+        print args.image,
     # if the size of the map is not the same original image, then blow it
     if original.size != sal.size:
         sal = sal.resize(original.size)
@@ -33,13 +46,17 @@ def make_quality_compression(original,sal):
     img_qualities = []
     quality_steps = [i*10 for i in xrange(1,11)]
 
+    # this temp directory will be deleted, do not use this to store your files
+    os.makedirs('temp_xxx_yyy')
     for q in quality_steps:
-        name = 'temp/temp_' + str(q) + '.jpg'
+        name = 'temp_xxx_yyy/temp_' + str(q) + '.jpg'
         if args.use_convert:
             os.system('convert -colorspace sRGB -filter Lanczos -interlace Plane -type truecolor -quality ' + str(q) + ' ' + args.image + ' ' + name)
         else:
             original.save(name, quality=q)
         img_qualities.append(np.asarray(Image.open(name)))
+        os.remove(name)
+    os.rmdir('temp_xxx_yyy')
                    
     k = img_qualities[-1][:] # make sure it is a copy and not reference
     shape = k.shape 
@@ -105,7 +122,6 @@ def make_quality_compression(original,sal):
                 if qq > high: qq = high 
                 k[i,j,l] = img_qualities[qq][i,j,l]
                 
-                    
 
     # save the original file at the given quality level
     compressed = args.output_directory + '/' + '_original_' + args.image.split('/')[-1] + '_' + str(args.jpeg_compression) + '.jpg'
@@ -115,6 +131,7 @@ def make_quality_compression(original,sal):
     original_size = os.path.getsize(compressed)
     os.system('convert ' + args.image + " " + args.output_directory + '/temp.png')
     uncompressed_size = os.path.getsize(args.output_directory + '/temp.png')
+    os.remove(args.output_directory + '/temp.png')
 
     out_img = array2PIL(k)
 
@@ -123,11 +140,14 @@ def make_quality_compression(original,sal):
         for qual in xrange(90,20,-1):
             out_img.save(out_name, quality=qual)
             current_size = os.path.getsize(out_name)
-            if current_size<= original_size*1.02: 
-                print args.model, uncompressed_size, original_size, current_size, args.jpeg_compression, qual,' | ',
+            if current_size<= original_size*(1 + args.threshold_pct/100.0): 
+                if args.print_metrics:
+                    print args.model, uncompressed_size, original_size, current_size, args.jpeg_compression, qual,' | ',
                 break
         else:
-            print args.model, uncompressed_size, original_size, current_size, args.jpeg_compression, qual,' | ',
+            if args.print_metrics:
+                print args.model, uncompressed_size, original_size, current_size, args.jpeg_compression, qual,' | ',
+            pass
 
     else:
         final_quality = [100, 85, 65, 45]

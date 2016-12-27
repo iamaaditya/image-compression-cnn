@@ -40,13 +40,17 @@ else:
 train_loss    = tf.scalar_summary("training loss", loss_tf)
 test_loss     = tf.scalar_summary("validation loss", loss_tf)
 
-optimizer     = tf.train.AdamOptimizer(tparam.learning_rate, epsilon=0.1)
-# optimizer.beta1 = 0.9
-# optimizer.beta2 = 0.9
-# optimizer = tf.train.FtrlOptimizer(tparam.learning_rate)
-# optimizer     = tf.train.RMSPropOptimizer(tparam.learning_rate)
-train_op      = optimizer.minimize(loss_tf)
+if   tparam.optimizer  == 'Adam' :
+    optimizer     = tf.train.AdamOptimizer(tparam.learning_rate, epsilon=0.1)
+elif tparam.optimizer  == 'Ftlr' :
+    optimizer = tf.train.FtrlOptimizer(tparam.learning_rate)
+elif tparam.optimizer  == 'Rmsprop' :
+    optimizer     = tf.train.RMSPropOptimizer(tparam.learning_rate)
+else:
+    raise Exception("Unknown optimizer specified")
 
+
+train_op      = optimizer.minimize(loss_tf)
 
 def sparse_labels_or_not(batch):
     if hyper.sparse:

@@ -7,7 +7,7 @@ class HyperParams() :
         self.vgg_weights = './data/caffe_layers_value.pickle'
         self.model_path  = 'models/model-50'
         self.n_labels    = 257
-        self.top_k       = 5  
+        self.top_k       = 10  
         self.stddev      = 0.2
         self.fine_tuning = False
         self.image_h     = 224
@@ -33,9 +33,11 @@ class TrainingParams():
         self.test_every_iter    = 200
         self.data_train_path    = './data/train.pickle'
         self.data_test_path     = './data/test.pickle'
+        self.images_path        = './data/images'
         self.resume_training    = False
         self.on_resume_fix_lr   = False
         self.change_lr_env      = False
+        self.optimizer          = 'Adam' # 'Adam', 'Rmsprop', 'Ftlr'
 
         if verbose:
             pprint(self.__dict__)

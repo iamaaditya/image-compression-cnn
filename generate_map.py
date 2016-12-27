@@ -49,10 +49,10 @@ with tf.Session() as sess:
         normalized_classmap = normalize(classmap_vals[0])
         
         if roi_map == None:
-            roi_map = 2 * normalized_classmap 
+            roi_map = 1.2 * normalized_classmap 
         else:
             # simple exponential ranking
-            roi_map = (roi_map + normalized_classmap)/3
+            roi_map = (roi_map + normalized_classmap)/2
     roi_map = normalize(roi_map)    
 
 
