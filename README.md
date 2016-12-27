@@ -1,9 +1,12 @@
 # Semantic Perceptual Image Compression using Deep Convolution Networks
 
 This code is part of the paper [arxiv](http://gpgpu.cs-i.brandeis.edu/semantic_jpeg.pdf) . It consists of two parts:
+
 1. Code to generate Multi-structure region of interest (MSROI)
    (This uses CNN model. A pretrained model has been provided)
+
 2. Code to use MSROI map to semantically compress image as JPEG
+
 3. Code to train a CNN model (to be used by 1)
 
 Requirements:
@@ -80,6 +83,15 @@ You may download pretrained weights referred in Params file as vgg_weights [from
 
 
 ## Evaluating metrics
+
+1. Use the '-print_metrics' command while calling 'combine_images.py'. This will print the metrics on STDOUT with this format --
+
+```
+jpeg_psnr,jpeg_ssim,our_ssim,our_q,jpeg_psnrhvs,png_size,model_number,our_size,filename,jpeg_vifp,jpeg_q,jpeg_msssim,our_psnrhvsm,jpeg_psnrhvsm,our_vifp,our_psnr,our_msssim,our_psnrhvs,jpeg_size
+```
+
+2. Pass the file which contains one line of metrics (as shown above) to the file 'read_log.py'. This will print various stats, and also plot the graphs as shown in the paper.
+
 
 
 # Multi-Structure Region-of-interest
