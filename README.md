@@ -1,6 +1,6 @@
 # Semantic Perceptual Image Compression using Deep Convolution Networks
 
-This code is part of the paper [arxiv](http://gpgpu.cs-i.brandeis.edu/semantic_jpeg.pdf) . It consists of two parts:
+This code is part of the paper [arxiv](http://gpgpu.cs-i.brandeis.edu/semantic_jpeg.pdf) . It consists of three parts:
 
 1. Code to generate Multi-structure region of interest (MSROI)
    (This uses CNN model. A pretrained model has been provided)
@@ -149,13 +149,16 @@ Only our model identifies the face of the boy on the right as well the hands of 
 # FAQ about image compression
 
 1. Is the final image really a standard JPEG?
+
    Yes, the final image is a standard JPEG as it is encoded using standard JPEG.
 
 2. But how can you improve JPEG using JPEG ?
+
    Standard JPEG uses a image level Quantization scaling Q. However, not all parts 
    of the image be compressed at same level. Our method allows to use variable Q.
 
 3. Don't we have to store the variable Q in the image file?
+
    No. Because the final image is encoded using a single Q. Please see Section 4 of our paper. 
 
 
