@@ -7,7 +7,7 @@ class HyperParams() :
         self.vgg_weights = './data/caffe_layers_value.pickle'
         self.model_path  = 'models/model-50'
         self.n_labels    = 257
-        self.top_k       = 10  
+        self.top_k       = 5  
         self.stddev      = 0.2
         self.fine_tuning = False
         self.image_h     = 224

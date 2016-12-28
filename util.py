@@ -1,7 +1,7 @@
 import skimage.io
 import skimage.transform
 import numpy as np
-import Image
+from PIL import Image
 
 def chunker(seq, size):
     # http://stackoverflow.com/a/25701576/1189865
@@ -41,3 +41,9 @@ def array2PIL(arr):
         arr = np.c_[arr, 255*np.ones((len(arr),1), np.uint8)]
 
     return Image.frombuffer(mode, (shape[1], shape[0]), arr.tostring(), 'raw', mode, 0, 1)
+
+
+def normalize(x):
+    min = np.min(x)
+    max = np.max(x)
+    return (x-min)/(max-min)

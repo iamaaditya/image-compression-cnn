@@ -1,6 +1,6 @@
 # from __future__ import division
 import sys
-import Image
+from PIL import Image
 import os
 import numpy as np
 from util import load_image, array2PIL

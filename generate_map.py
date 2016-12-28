@@ -1,29 +1,29 @@
 from __future__ import division
+
+import os, sys
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
-import tensorflow as tf
+
+from util import load_single_image, normalize
+if os.path.exists(sys.argv[1]): 
+    image = load_single_image(sys.argv[1])
+else: 
+    raise Exception("Image file " + sys.argv[1] + " does not exist")
+
+# this is to ensure fast failure, why load other modules if no input file
+# matplotlib has to be loaded before inorder to change backend
+
 import pandas as pd
 import numpy as np
 from model import CNN
-from util import load_single_image
 from params import HyperParams
 import skimage.io
-import matplotlib.pyplot as plt
-import os
-import sys
 
 
-image = load_single_image(sys.argv[1])
+import tensorflow as tf
 hyper = HyperParams(verbose=False)
-
-def normalize(x):
-    min = np.min(x)
-    max = np.max(x)
-    return (x-min)/(max-min)
-
-
 images_tf = tf.placeholder(tf.float32, [None, hyper.image_h, hyper.image_w, hyper.image_c], name="images")
 class_tf  = tf.placeholder(tf.int64, [None], name='class')
 

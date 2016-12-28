@@ -1,6 +1,6 @@
 # Semantic Perceptual Image Compression using Deep Convolution Networks
 
-This code is part of the paper [arxiv](https://arxiv.org/abs/1612.08712) . It consists of three parts:
+This code is part of the paper [arxiv](https://arxiv.org/abs/1612.08712), abstract of the paper is provided at the bottom of this page. It consists of three parts:
 
 1. Code to generate Multi-structure region of interest (MSROI)
    (This uses CNN model. A pretrained model has been provided)
@@ -9,10 +9,16 @@ This code is part of the paper [arxiv](https://arxiv.org/abs/1612.08712) . It co
 
 3. Code to train a CNN model (to be used by 1)
 
+
 Requirements:
 1. Tensorflow
-2. Python PIL
-3. Python Skimage
+2. Numpy
+3. Pandas
+4. Python PIL
+5. Python SKimage
+
+For detailed requirements list please see requirements.txt
+
 
 Recomended:
 1. Imagemagick (for faster image operations)
@@ -32,6 +38,7 @@ Table of Contents
       * [Design Choices](#design-choices)
    * [FAQ about image compression](#faq-about-image-compression)
    * [Credits](#credits)
+   * [Abstract](#abstract)
 
 # How to use this code ?
 
@@ -162,6 +169,22 @@ Only our model identifies the face of the boy on the right as well the hands of 
    No. Because the final image is encoded using a single Q. Please see Section 4 of our paper. 
 
 
+# Possible Issues
+
+1. Cannot import Image (in util.py)
+   Resolution: Change it to `from PIL import Image`
+
+2. ValueError: setting an array element with a sequence.
+   Resolution: The image file you are passing does not exist
+
+3. UserWarning: Possible precision loss when converting from float32 to uint8
+   Resolution: This is only a warning from skimage. Nothing needs to be done
+
+4. No message or nothing
+   Default behaviour of the program is such that there is no message unless there is an error,
+   or verbose is set to True. Check "output" directory for output files. If there is no output
+   directory then make one and run the code again.
+
 # Credits
 
  * CNN structure based on VGG16, https://github.com/ry/tensorflow-vgg16/blob/master/vgg16.py
@@ -170,3 +193,25 @@ Only our model identifies the face of the boy on the right as well the hands of 
  * Conv2d layer based on https://github.com/carpedm20/DCGAN-tensorflow/blob/master/ops.py
 
 My sincere thanks to [@jazzsaxmafia](https://github.com/jazzsaxmafia), [@carpedm20](https://github.com/carpedm20) and [@metalbubble](https://github.com/metalbubble) from whose code I learned and borrowed heavily.
+
+# Abstract
+========================================================================================================================
+> It has long been considered a significant problem to improve the visual quality of lossy image
+> and video compression. Recent advances in computing power together with the availability
+> of large training data sets has increased interest in the application of deep learning cnns
+> to address image recognition and image processing tasks. Here, we present a powerful cnn
+> tailored to the specific task of semantic image understanding to achieve higher visual quality
+> in lossy compression. A modest increase in complexity is incorporated to the encoder which
+> allows a standard, off-the-shelf jpeg decoder to be used. While jpeg encoding may be
+> optimized for generic images, the process is ultimately unaware of the specific content of
+> the image to be compressed. Our technique makes jpeg content-aware by designing and
+> training a model to identify multiple semantic regions in a given image. Unlike object
+> detection techniques, our model does not require labeling of object positions and is able to
+> identify objects in a single pass. We present a new cnn architecture directed specifically to
+> image compression, which generates a map that highlights semantically-salient regions so
+> that they can be encoded at higher quality as compared to background regions. By adding
+> a complete set of features for every class, and then taking a threshold over the sum of all
+> feature activations, we generate a map that highlights semantically-salient regions so that
+> they can be encoded at a better quality compared to background regions. Experiments are
+> presented on the Kodak PhotoCD dataset and the MIT Saliency Benchmark dataset, in
+> which our algorithm achieves higher visual quality for the same compressed size.
