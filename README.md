@@ -1,6 +1,6 @@
 # Semantic Perceptual Image Compression using Deep Convolution Networks
 
-This code is part of the paper [arxiv](http://gpgpu.cs-i.brandeis.edu/semantic_jpeg.pdf) . It consists of three parts:
+This code is part of the paper [arxiv](https://arxiv.org/abs/1612.08712) . It consists of three parts:
 
 1. Code to generate Multi-structure region of interest (MSROI)
    (This uses CNN model. A pretrained model has been provided)

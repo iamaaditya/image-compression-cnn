@@ -39,7 +39,7 @@ class CNN():
         # tranpose because VGG weights were stored in diffeerent order
         return layer[0].transpose((2,3,1,0)) 
 
-    def conv2d_depth(self, input_, name, nonlinearity=None):
+    def conv2d_depth_or_not(self, input_, name, nonlinearity=None):
         with tf.variable_scope(name) as scope:
             
             W_shape = cnn_param.layer_shapes[name + '/W']
@@ -58,19 +58,13 @@ class CNN():
             conv_weights = tf.get_variable("W", shape=W_shape, initializer=W_initializer)
             conv_biases  = tf.get_variable("b", shape=b_shape, initializer=b_initializer)
 
-            # debug
             if name == 'depth':
                 # learn different filter for each input channel
                 # thus the number of input channel has to be reduced
                 conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
                 # conv = tf.nn.separable_conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
-                # conv_biases_3d  = tf.get_variable("b_", shape=(8,), initializer=b_initializer)
-                # bias = tf.nn.bias_add(conv, conv_biases_3d)
-                # bias = conv
             else:
                 conv = tf.nn.conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
-                # conv = tf.nn.depthwise_conv2d_native(input_, conv_weights, [1,1,1,1], padding='SAME')
-                # conv = tf.nn.separable_conv2d(input_, conv_weights, [1,1,1,1], padding='SAME')
 
             bias = tf.nn.bias_add(conv, conv_biases)
             bias = tf.nn.dropout(bias,0.7) 
@@ -106,40 +100,40 @@ class CNN():
 
         image = self.image_conversion_scaling(image)
 
-        conv1_1    = self.conv2d_depth(image,   "conv1_1", nonlinearity=tf.nn.relu)
-        conv1_2    = self.conv2d_depth(conv1_1, "conv1_2", nonlinearity=tf.nn.relu)
+        conv1_1    = self.conv2d_depth_or_not(image,   "conv1_1", nonlinearity=tf.nn.relu)
+        conv1_2    = self.conv2d_depth_or_not(conv1_1, "conv1_2", nonlinearity=tf.nn.relu)
         pool1      = tf.nn.max_pool(conv1_2, ksize=cnn_param.pool_window, 
                      strides=cnn_param.pool_stride, padding='SAME', name='pool1')
 
-        conv2_1    = self.conv2d_depth(pool1,   "conv2_1", nonlinearity=tf.nn.relu)
-        conv2_2    = self.conv2d_depth(conv2_1, "conv2_2", nonlinearity=tf.nn.relu)
+        conv2_1    = self.conv2d_depth_or_not(pool1,   "conv2_1", nonlinearity=tf.nn.relu)
+        conv2_2    = self.conv2d_depth_or_not(conv2_1, "conv2_2", nonlinearity=tf.nn.relu)
         pool2      = tf.nn.max_pool(conv2_2, ksize=cnn_param.pool_window,
                      strides=cnn_param.pool_stride, padding='SAME', name='pool2')
 
-        conv3_1    = self.conv2d_depth(pool2,   "conv3_1", nonlinearity=tf.nn.relu)
-        conv3_2    = self.conv2d_depth(conv3_1, "conv3_2", nonlinearity=tf.nn.relu)
-        conv3_3    = self.conv2d_depth(conv3_2, "conv3_3", nonlinearity=tf.nn.relu)
+        conv3_1    = self.conv2d_depth_or_not(pool2,   "conv3_1", nonlinearity=tf.nn.relu)
+        conv3_2    = self.conv2d_depth_or_not(conv3_1, "conv3_2", nonlinearity=tf.nn.relu)
+        conv3_3    = self.conv2d_depth_or_not(conv3_2, "conv3_3", nonlinearity=tf.nn.relu)
         pool3      = tf.nn.max_pool(conv3_3, ksize=cnn_param.pool_window, 
                      strides=cnn_param.pool_stride, padding='SAME', name='pool3')
 
-        conv4_1    = self.conv2d_depth(pool3,   "conv4_1", nonlinearity=tf.nn.relu)
-        conv4_2    = self.conv2d_depth(conv4_1, "conv4_2", nonlinearity=tf.nn.relu)
-        conv4_3    = self.conv2d_depth(conv4_2, "conv4_3", nonlinearity=tf.nn.relu)
+        conv4_1    = self.conv2d_depth_or_not(pool3,   "conv4_1", nonlinearity=tf.nn.relu)
+        conv4_2    = self.conv2d_depth_or_not(conv4_1, "conv4_2", nonlinearity=tf.nn.relu)
+        conv4_3    = self.conv2d_depth_or_not(conv4_2, "conv4_3", nonlinearity=tf.nn.relu)
         pool4      = tf.nn.max_pool(conv4_3, ksize=cnn_param.pool_window, 
                      strides=cnn_param.pool_stride, padding='SAME', name='pool4')
 
-        conv5_1    = self.conv2d_depth(pool4,   "conv5_1", nonlinearity=tf.nn.relu)
-        conv5_2    = self.conv2d_depth(conv5_1, "conv5_2", nonlinearity=tf.nn.relu)
-        conv5_3    = self.conv2d_depth(conv5_2, "conv5_3", nonlinearity=tf.nn.relu)
+        conv5_1    = self.conv2d_depth_or_not(pool4,   "conv5_1", nonlinearity=tf.nn.relu)
+        conv5_2    = self.conv2d_depth_or_not(conv5_1, "conv5_2", nonlinearity=tf.nn.relu)
+        conv5_3    = self.conv2d_depth_or_not(conv5_2, "conv5_3", nonlinearity=tf.nn.relu)
     
         # feature wise convolution layers, no non-linearity
-        conv_depth_1 = self.conv2d_depth(conv5_3, "conv6_1")
+        conv_depth_1 = self.conv2d_depth_or_not(conv5_3, "conv6_1")
         # two layer of feature-wise convolution, a cubic feature transformation
-        conv_depth   = self.conv2d_depth(conv_depth_1, "depth")
+        conv_depth   = self.conv2d_depth_or_not(conv_depth_1, "depth")
 
         # this is a replcement of last FCL layer from VGG (common in GAP & GMP models)
         # this layer does not have non-nonlinearity
-        conv_last = self.conv2d_depth(conv_depth, "conv6")
+        conv_last = self.conv2d_depth_or_not(conv_depth, "conv6")
         gap       = tf.reduce_mean(conv_last, [1,2])
 
         with tf.variable_scope("GAP"):
