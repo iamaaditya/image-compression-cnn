@@ -26,7 +26,7 @@ parser.add_argument('-use_convert'      , type=int , default=0)
 parser.add_argument('-jpeg_compression' , type=int , default=50)
 
 # there are various models from 1 to 6 on how best to mix different JPEG Qualities
-parser.add_argument('-model'            , type=int , default=6)
+parser.add_argument('-model'            , type=int , default=3)
 parser.add_argument('-single'           , type=int , default=1)
 parser.add_argument('-dataset'          , type=str , default='kodak')
 

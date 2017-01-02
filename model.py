@@ -45,8 +45,9 @@ class CNN():
             W_shape = cnn_param.layer_shapes[name + '/W']
             b_shape = cnn_param.layer_shapes[name + '/b']
             
-            if hyper.fine_tuning and name != 'conv6':
-                # because conv6 is the replacement of FCL layer, common in GAP and GMP models
+            if hyper.fine_tuning and name not in ['conv6', 'conv6_1', 'depth']:
+                # because conv6, conv6_1, and depth are the layers added on top of VGG 
+                # hence not present in VGG 
                 W = self.get_vgg_weights(name)
                 b = self.get_vgg_weights(name, bias=True)
                 W_initializer = tf.constant_initializer(W)

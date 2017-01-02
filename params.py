@@ -9,11 +9,10 @@ class HyperParams() :
         self.n_labels    = 257
         self.top_k       = 5  
         self.stddev      = 0.2
-        self.fine_tuning = False
+        self.fine_tuning = True
         self.image_h     = 224
         self.image_w     = 224
         self.image_c     = 3 
-        # TODO, no need for VGG
         self.cnn_struct  = 'vgg' # ['vgg', 'msroi']
         self.filter_h    = 3
         self.filter_w    = 3
@@ -25,10 +24,10 @@ class TrainingParams():
     def __init__(self, verbose):
         self.model_path         = './models/'
         self.num_epochs         = 200
-        self.learning_rate      = 0.0002
+        self.learning_rate      = 0.002
         self.weight_decay_rate  = 0.0005
         self.momentum           = 0.9
-        self.batch_size         = 50
+        self.batch_size         = 32
         self.max_iters          = 200000
         self.test_every_iter    = 200
         self.data_train_path    = './data/train.pickle'
