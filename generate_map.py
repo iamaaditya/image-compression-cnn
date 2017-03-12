@@ -48,7 +48,7 @@ with tf.Session() as sess:
         classmap_vals = sess.run(classmap, feed_dict={class_tf: current_class, conv_last: conv_last_val})
         normalized_classmap = normalize(classmap_vals[0])
         
-        if roi_map == None:
+        if roi_map is None:
             roi_map = 1.2 * normalized_classmap 
         else:
             # simple exponential ranking

@@ -92,9 +92,9 @@ class CNN():
         # Conversion to bgr and mean substraction is common with VGGNET
         # Because pre-trained values use them, https://arxiv.org/pdf/1409.1556.pdf
         image *= 255.
-        r, g, b = tf.split(3, 3, image)
+        r, g, b = tf.split(image, 3, 3)
         VGG_MEAN = [103.939, 116.779, 123.68]
-        return tf.concat(3, [b-VGG_MEAN[0], g-VGG_MEAN[1], r-VGG_MEAN[2]])
+        return tf.concat([b-VGG_MEAN[0], g-VGG_MEAN[1], r-VGG_MEAN[2]], 3)
 
 
     def build(self, image):
@@ -155,6 +155,6 @@ class CNN():
             class_w = tf.reshape(class_w, [-1, cnn_param.last_features, 1]) 
         conv_last_ = tf.image.resize_bilinear(conv_last, [hyper.image_h, hyper.image_w])
         conv_last_ = tf.reshape(conv_last_, [-1, hyper.image_h*hyper.image_w, cnn_param.last_features]) 
-        classmap   = tf.reshape(tf.batch_matmul(conv_last_, class_w), [-1, hyper.image_h,hyper.image_w])
+        classmap   = tf.reshape(tf.matmul(conv_last_, class_w), [-1, hyper.image_h,hyper.image_w])
         return classmap
 
