@@ -11,7 +11,7 @@ label_pairs            = map(lambda x: x.split('.'), image_dir_list)
 labels, label_names    = zip(*label_pairs)
 labels                 = map(lambda x: int(x), labels)
 
-label_dict             = pd.Series(labels, index = label_names) label_dict - = 1
+label_dict             = pd.Series(labels, index = label_names) - 1
 image_paths_per_label  = map(lambda one_dir: map(lambda one_file: os.path.join( tparam.images, one_dir, one_file ), os.listdir( os.path.join( tparam.images, one_dir))), image_dir_list)
 image_paths_train      = np.hstack(map(lambda one_class: one_class[:-10], image_paths_per_label))
 
