@@ -9,7 +9,7 @@ class HyperParams() :
         self.n_labels    = 257
         self.top_k       = 5  
         self.stddev      = 0.2
-        self.fine_tuning = True
+        self.fine_tuning = False 
         self.image_h     = 224
         self.image_w     = 224
         self.image_c     = 3 
