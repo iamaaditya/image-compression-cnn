@@ -19,7 +19,7 @@ numpy == 1.11.3
 # generate_map.py: 18
 # train.py: 7
 pandas == 0.18.1
-tensorflow == 0.11.0
+tensorflow == 2.3.1
 
 # generate_map.py: 22
 # util.py: 1,2
