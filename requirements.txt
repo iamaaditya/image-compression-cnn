@@ -3,7 +3,7 @@
 
 # combine_images.py: 3
 # util.py: 4
-Pillow == 6.2.0
+Pillow == 8.3.2
 
 # generate_map.py: 4,6
 # read_log.py: 78,80
