@@ -14,7 +14,7 @@ matplotlib == 1.4.2.egg
 # model.py: 10
 # train.py: 6
 # util.py: 3
-numpy == 1.11.3
+numpy == 1.21.0
 
 # generate_map.py: 18
 # train.py: 7
